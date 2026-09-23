@@ -437,7 +437,7 @@ const isPhone = matchMedia('(max-width: 899px)').matches;
 let inFrame = false; try { inFrame = window.self !== window.top; } catch (e) { inFrame = true; }
 renderer.setPixelRatio(Math.min(devicePixelRatio, inFrame ? 1 : 1.5)); // во фрейме (артефакт) рядом крутится ещё и страница чата, поэтому плотность 1
 renderer.setClearColor(V.page);
-const EXP_DAY = .74; let expCity = EXP_DAY; renderer.toneMapping = THREE.LinearToneMapping; // днём свет квартала в сумме больше единицы: без экспозиции белые крыши и тротуары выгорали в чистый белый на трети кадра; планета первого экрана остаётся в прежнем свете, экспозиция приходит вместе с кварталом
+const EXP_DAY = .66; let expCity = EXP_DAY; renderer.toneMapping = THREE.LinearToneMapping; // днём свет квартала в сумме больше единицы: без экспозиции белые крыши и тротуары выгорали в чистый белый на трети кадра; планета первого экрана остаётся в прежнем свете, экспозиция приходит вместе с кварталом
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = isPhone ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false; // тени пересчитываются только в кадрах прокрутки и жестов, не в покое
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(V.page, 60, 230);
@@ -766,7 +766,7 @@ function buildCity(m) {
     let h = .8 + rnd() * 1.9; if (towerZone(gx, gz)) h += rnd() * 5 * pr.towers + 1.5; if (pr.lowrise) h = Math.min(h, 2.2);
     const k = rnd();
     if (k < .22) { const cx = gx * SP + (rnd() - .5) * .3, cz = Z0 + gz * SP + (rnd() - .5) * .5, w = .9 + rnd() * .35; building(cx - w / 2 - .17, cz, w, h, 1.7 + rnd() * .7); building(cx + w / 2 + .17, cz, w, Math.max(.8, h * (.6 + rnd() * .6)), 1.7 + rnd() * .7); }
-    else if (k < .38) { const cx = gx * SP + (rnd() - .5) * .2, cz = Z0 + gz * SP + (rnd() - .5) * .2, w = 1.4 + rnd() * .3, d = 1.7 + rnd() * .6; building(cx, cz, w, h, d); building(cx + w / 2 + .15, cz + d / 2 - .45, .7, Math.min(h * .5, 1.1), .9); }
+    else if (k < .38) { const cx = gx * SP + (rnd() - .5) * .2, cz = Z0 + gz * SP + (rnd() - .5) * .2, w = 1.4 + rnd() * .3, d = 1.7 + rnd() * .6; building(cx, cz, w, h, d); building(cx + w / 2 + .15, cz + d / 2 - .47, .7, Math.min(h * .5, 1.1), .9); } // пристройка утоплена на .02: в одной плоскости с фасадом дома их стены штриховались
     else building(gx * SP + (rnd() - .5) * .5, Z0 + gz * SP + (rnd() - .5) * .5, 1.6 + rnd() * .9, h, 1.6 + rnd() * .9);
   }
   balc.count = bi; rails.count = ri; bands.count = ni; balc.instanceMatrix.needsUpdate = rails.instanceMatrix.needsUpdate = bands.instanceMatrix.needsUpdate = true; balc.castShadow = rails.castShadow = bands.castShadow = false; rails.frustumCulled = false; g.add(balc); g.add(rails); g.add(bands);
