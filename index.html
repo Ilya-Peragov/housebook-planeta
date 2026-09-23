@@ -6,8 +6,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geologica:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>:root { --paper:#FFFFFF; --page:#F3F8FC; --sunken:#EDF2F5; --tint:#DAF1DC; --line:#E2E7EA; --control:#7E8386; --ink-3:#656A6D; --ink-2:#4D5254; --ink:#121517; --accent:#00732D; --accent-hover:#005820; --accent-text: var(--accent); --on-accent:#FFFFFF; --glass: rgba(255,255,255,.9); --page-0: rgba(243,248,252,0);
   --e1: 0 1px 2px rgba(18,21,23,.06); --e2: 0 10px 30px -12px rgba(18,21,23,.16); --e3: 0 24px 60px -24px rgba(18,21,23,.22); --gutter: 32px; --wrap: 1180px; }
-/* вечер: та же палитра, тёмные поверхности смешаны из ink и ink-2, зелень из accent-hover; переключатель в шапке и в сцене */
-html.dusk { --page:#121517; --paper: color-mix(in srgb, #4D5254 34%, #121517); --sunken: color-mix(in srgb, #4D5254 50%, #121517); --tint: color-mix(in srgb, #005820 24%, #121517); --line: color-mix(in srgb, #E2E7EA 30%, #121517); --ink-3: color-mix(in srgb, #E2E7EA 50%, #7E8386); --ink-2:#E2E7EA; --ink:#FFFFFF; --accent:#005820; --accent-text: color-mix(in srgb, #005820 62%, #FFFFFF); --accent-hover: color-mix(in srgb, #005820 50%, #FFFFFF); --glass: rgba(18,21,23,.84); --page-0: rgba(18,21,23,0); --e2: 0 10px 30px -12px rgba(0,0,0,.5); --e3: 0 24px 60px -24px rgba(0,0,0,.6); }
+/* вечер: та же палитра, тёмные поверхности смешаны из ink и ink-2, зелень из цвета логотипа; переключатель в шапке и в сцене */
+html.dusk { --page:#121517; --paper: color-mix(in srgb, #4D5254 34%, #121517); --sunken: color-mix(in srgb, #4D5254 50%, #121517); --tint: color-mix(in srgb, #00732D 24%, #121517); --line: color-mix(in srgb, #E2E7EA 30%, #121517); --ink-3: color-mix(in srgb, #E2E7EA 50%, #7E8386); --ink-2:#E2E7EA; --ink:#FFFFFF; --accent:#00732D; --accent-text: color-mix(in srgb, #00732D 55%, #FFFFFF); --accent-hover: color-mix(in srgb, #00732D 90%, #FFFFFF); --glass: rgba(18,21,23,.84); --page-0: rgba(18,21,23,0); --e2: 0 10px 30px -12px rgba(0,0,0,.5); --e3: 0 24px 60px -24px rgba(0,0,0,.6); }
 *, *::before, *::after { box-sizing: border-box; }
 html { background: var(--page); scroll-behavior: smooth; }
 body { margin: 0; background: var(--page); color: var(--ink-2); font: 400 16px/1.55 "IBM Plex Sans", system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: clip; font-variant-numeric: tabular-nums; }
@@ -36,6 +36,7 @@ button { font: inherit; color: inherit; }
 .note { font-size: 13px; color: var(--ink-3); }
 .more { font-size: 14px; font-weight: 600; color: var(--accent-text); text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
 .more:hover { color: var(--accent-hover); }
+html.dusk .more:hover { color: color-mix(in srgb, #00732D 40%, #FFFFFF); }
 
 /* театр: липкая сцена, история поверх */
 .theatre { position: relative; margin-top: -63px; } /* сцена уходит под полупрозрачную шапку: кадр на всю высоту окна, планета не срезается снизу */
@@ -83,8 +84,8 @@ html.dusk .cloud { --c1: rgba(77,82,84,.96); --c2: rgba(101,106,109,.85); --c0: 
 .mk small { font-size: 11px; opacity: .75; }
 .night { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 0 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); font-size: 13px; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
 .night:hover { border-color: var(--control); color: var(--ink); }
-.night::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); box-shadow: inset 0 0 0 3px var(--paper); border: 1px solid var(--accent); }
-.night[aria-pressed="true"]::before { background: var(--paper); box-shadow: inset -3px -3px 0 0 var(--accent); }
+.night::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--accent-text); box-shadow: inset 0 0 0 3px var(--paper); border: 1px solid var(--accent-text); }
+.night[aria-pressed="true"]::before { background: var(--paper); box-shadow: inset -3px -3px 0 0 var(--accent-text); }
 .hint { position: absolute; right: var(--gutter); top: 76px; padding: 8px 14px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(6px); font: 500 11px/1 "Geologica", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; }
 .hint.on { opacity: 1; }
 /* точки глав и пропуск сцены одной группой в углу кадра; точка, взведённая первым щелчком колеса, мигает */
@@ -185,8 +186,8 @@ html.dusk .cloud { --c1: rgba(77,82,84,.96); --c2: rgba(101,106,109,.85); --c0: 
 table { width: 100%; border-collapse: collapse; font-size: 15px; }
 th, td { text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--line); }
 th { font: 600 12px/1.3 "Geologica", sans-serif; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); background: var(--sunken); cursor: pointer; user-select: none; white-space: nowrap; }
-th[aria-sort="ascending"]::after { content: " \2191"; color: var(--accent); }
-th[aria-sort="descending"]::after { content: " \2193"; color: var(--accent); }
+th[aria-sort="ascending"]::after { content: " \2191"; color: var(--accent-text); }
+th[aria-sort="descending"]::after { content: " \2193"; color: var(--accent-text); }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 tr:last-child td { border-bottom: 0; }
 td a { color: var(--ink); font-weight: 600; text-decoration: none; }
@@ -194,7 +195,7 @@ td a:hover { color: var(--accent-text); }
 td small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 400; }
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; counter-reset: step; }
 .step { display: grid; gap: 10px; align-content: start; padding: 24px; background: var(--paper); border: 1px solid var(--line); border-radius: 16px; }
-.step::before { counter-increment: step; content: counter(step, decimal-leading-zero); font: 600 12px/1 "Geologica", sans-serif; letter-spacing: .12em; color: var(--accent); }
+.step::before { counter-increment: step; content: counter(step, decimal-leading-zero); font: 600 12px/1 "Geologica", sans-serif; letter-spacing: .12em; color: var(--accent-text); }
 .step h3 { font-size: 19px; }
 .step p { font-size: 15px; }
 .who { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
@@ -423,6 +424,8 @@ document.documentElement.classList.add('js');
 // Сцена «планета, город, дом, дверь, сделка». Прокрутка театра даёт долю пути p в [0,1], пять глав делят его поровну.
 // Все цвета из палитры Housebook. Цифры и имена берутся из HB_MARKETS, который печатает сборщик из живого JSON.
 const V = { page:0xF3F8FC, paper:0xFFFFFF, sunken:0xEDF2F5, tint:0xDAF1DC, line:0xE2E7EA, control:0x7E8386, ink3:0x656A6D, ink2:0x4D5254, ink:0x121517, accent:0x00732D, accent2:0x005820 };
+// в сцене accent2 это светлая зелень (окна вечером, вторая крона, камни дорожки): выводится из цвета логотипа к подложке, а не из цвета наведения, который темнее акцента
+V.accent2 = new THREE.Color(V.accent).lerp(new THREE.Color(V.tint), .22).getHex();
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
@@ -685,7 +688,7 @@ function buildCity(m) {
   const beach = slab(380, 3.4, V.paper, 1); beach.position.set(0, .02, SHORE - 1.6); g.add(beach); flats.push(beach);
   const shoreLine = slab(380, .12, V.ink, .16); shoreLine.position.set(0, .05, SHORE); g.add(shoreLine); flats.push(shoreLine);
   // острова за морем, если у рынка они есть
-  if (pr.islands) for (const [x, z, s] of [[-58, -48, 1], [-44, -62, .7], [52, -44, 1.2], [70, -58, .8]]) { const isl = new THREE.Mesh(curved(28 * s, 18 * s, 18, 12, 0, (a, b) => Math.max(0, (1 - Math.hypot(a / (14 * s), b / (9 * s))) * 5.5 * s)), new THREE.MeshStandardMaterial({ color: V.tint, roughness: 1, transparent: true })); isl.rotation.x = -Math.PI / 2; isl.position.set(x, .1, z); g.add(isl); flats.push(isl); }
+  if (pr.islands) for (const [x, z, s] of [[-58, -48, 1], [-44, -62, .7], [52, -44, 1.2], [70, -58, .8]]) { const isl = new THREE.Mesh(curved(28 * s, 18 * s, 18, 12, 0, (a, b) => Math.max(0, (1 - Math.hypot(a / (14 * s), b / (9 * s))) * 5.5 * s)), new THREE.MeshStandardMaterial({ color: V.tint, roughness: 1, transparent: true, envMapIntensity: .15 })); isl.rotation.x = -Math.PI / 2; isl.position.set(x, .1, z); g.add(isl); flats.push(isl); }
   // улицы
   for (let gz = -1; gz <= 6; gz++) { const z = Z0 + gz * SP + SP / 2; const sw = slab(46, 1.7, V.paper, .5); sw.position.set(0, .011, z); g.add(sw); flats.push(sw); const s = slab(46, .9, V.control, .26); s.position.set(0, .012, z); g.add(s); flats.push(s); }
   for (let gx = -6; gx <= 6; gx++) { const x = gx * SP + SP / 2; const sw = slab(1.7, 30, V.paper, .5); sw.position.set(x, .011, Z0 + 3 * SP); g.add(sw); flats.push(sw); const s = slab(.9, 30, V.control, .26); s.position.set(x, .012, Z0 + 3 * SP); g.add(s); flats.push(s); }
@@ -723,52 +726,127 @@ function buildCity(m) {
   const NB = 1200, NR = 2400;
   const balc = new THREE.InstancedMesh(new THREE.BoxGeometry(.42, .035, .2), wall(V.sunken, { rough: .9 }), NB); let bi = 0;
   const rails = new THREE.InstancedMesh(new THREE.BoxGeometry(.42, .13, .02), new THREE.MeshStandardMaterial({ color: V.line, transparent: true, opacity: .6, roughness: .3, metalness: .4 }), NR); let ri = 0;
-  const bands = new THREE.InstancedMesh(new THREE.BoxGeometry(1, .045, 1), wall(V.sunken, { rough: .9 }), 700); let ni = 0;
+  const bands = new THREE.InstancedMesh(new THREE.BoxGeometry(1, .045, 1), wall(V.sunken, { rough: .9 }), 900); let ni = 0;
   // перила: рейка длиной len на уличной грани (side 0 это +z, 1 это +x), по оси грани
   function rail(x, y, z, len, side, sy = 1) { if (ri >= NR) return; S.set(len / .42, sy, 1); M.compose(Pv.set(x, y, z), side ? Q.setFromAxisAngle(Y, Math.PI / 2) : Q.identity(), S); rails.setMatrixAt(ri++, M); S.set(1, 1, 1); }
   // балконы на двух уличных гранях со второго этажа (первый отдан витрине): у балконных домов плита под каждым окном по раскладке шейдера (.62 на окно, 82% грани), у остальных один длинный балкон на этаж
-  function balconiesFor(w, h, d, x0, z0, long) { const rows = Math.floor((h - .1) / .55);
-    for (let f = 1; f < rows; f++) for (const side of [0, 1]) { const len = side === 0 ? w : d, cols = long ? 1 : Math.max(1, Math.floor(len / .62)), sx = long ? len * .86 / .42 : 1; for (let k = 0; k < cols && bi < NB; k++) { const y = .4 + f * .55 - .12, u = long ? 0 : ((k + .5) / cols - .5) * len * .82;
+  function balconiesFor(w, h, d, x0, z0, long, y0 = 0) { const rows = Math.floor((h - .1) / .55);
+    for (let f = 1; f < rows; f++) for (const side of [0, 1]) { const len = side === 0 ? w : d, cols = long ? 1 : Math.max(1, Math.floor(len / .62)), sx = long ? len * .86 / .42 : 1; for (let k = 0; k < cols && bi < NB; k++) { const y = y0 + .4 + f * .55 - .12, u = long ? 0 : ((k + .5) / cols - .5) * len * .82;
       if (side === 0) { Pv.set(x0 + u, y, z0 + d / 2 + .1); Q.identity(); } else { Pv.set(x0 + w / 2 + .1, y, z0 + u); Q.setFromAxisAngle(Y, Math.PI / 2); }
       S.set(sx, 1, 1); M.compose(Pv, Q, S); balc.setMatrixAt(bi++, M); S.set(1, 1, 1); rail(Pv.x + (side ? .09 : 0), y + .085, Pv.z + (side ? 0 : .09), sx * .42, side); } } }
   // межэтажные плиты с перилами по их кромке на уличных гранях
-  function bandsFor(w, h, d, x0, z0) { for (let y = .55; y < h - .2 && ni < 700; y += .55) { M.compose(Pv.set(x0, y, z0), Q.identity(), S.set(w + .08, 1, d + .08)); bands.setMatrixAt(ni++, M); S.set(1, 1, 1); rail(x0, y + .085, z0 + d / 2 + .05, w * .9, 0, .9); rail(x0 + w / 2 + .05, y + .085, z0, d * .9, 1, .9); } }
+  function bandsFor(w, h, d, x0, z0, y0 = 0) { for (let y = y0 + .55; y < y0 + h - .2 && ni < 900; y += .55) { M.compose(Pv.set(x0, y, z0), Q.identity(), S.set(w + .08, 1, d + .08)); bands.setMatrixAt(ni++, M); S.set(1, 1, 1); rail(x0, y + .085, z0 + d / 2 + .05, w * .9, 0, .9); rail(x0 + w / 2 + .05, y + .085, z0, d * .9, 1, .9); } }
   // ограждение по кромке плоской кровли поверх парапета
-  function roofRails(w, h, d, x0, z0) { const y = h + .125; rail(x0, y, z0 + d / 2 + .05, w + .1, 0, .8); rail(x0, y, z0 - d / 2 - .05, w + .1, 0, .8); rail(x0 + w / 2 + .05, y, z0, d + .1, 1, .8); rail(x0 - w / 2 - .05, y, z0, d + .1, 1, .8); }
-  // коробки домов, парапеты и надстройки одним инстансом с материалом фасада; крыши, сады и кроны отдельными
-  const inst = { walls: wallMesh(900),
-    roof: new THREE.InstancedMesh(new THREE.ConeGeometry(1, 1, 4), wall(V.sunken, { rough: .95 }), 120), garden: new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ color: V.tint, roughness: .95, envMapIntensity: .2 }), 80), leaf: new THREE.InstancedMesh(leafGeo, leafA, 80) };
-  for (const k in inst) { inst[k].count = 0; inst[k].castShadow = k !== 'garden'; inst[k].receiveShadow = true; }
+  function roofRails(w, top, d, x0, z0) { const y = top + .125; rail(x0, y, z0 + d / 2 + .05, w + .1, 0, .8); rail(x0, y, z0 - d / 2 - .05, w + .1, 0, .8); rail(x0 + w / 2 + .05, y, z0, d + .1, 1, .8); rail(x0 - w / 2 - .05, y, z0, d + .1, 1, .8); }
+  // коробки домов, парапеты и надстройки одним инстансом с материалом фасада; крыши, сады, бассейны и кроны отдельными
+  // вальмовая крыша: пирамида с основанием в единичный квадрат, растягивается под любой прямоугольник
+  const hipGeo = new THREE.ConeGeometry(1, 1, 4).rotateY(Math.PI / 4).scale(Math.SQRT2, 1, Math.SQRT2);
+  const inst = { walls: wallMesh(1800),
+    hip: new THREE.InstancedMesh(hipGeo, wall(V.sunken, { rough: .95 }), 260), hipDark: new THREE.InstancedMesh(hipGeo, wall(new THREE.Color(V.control).lerp(new THREE.Color(V.sunken), .45).getHex(), { rough: 1 }), 200),
+    garden: new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ color: V.tint, roughness: .95, envMapIntensity: .2 }), 160),
+    pool: new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshStandardMaterial({ color: new THREE.Color(V.tint).lerp(new THREE.Color(V.accent), .3), roughness: .12, metalness: .1, envMapIntensity: .6 }), 160),
+    leaf: new THREE.InstancedMesh(leafGeo, leafA, 160) };
+  for (const k in inst) { inst[k].count = 0; inst[k].castShadow = k !== 'garden' && k !== 'pool'; inst[k].receiveShadow = true; }
   inst.walls.material.userData.shared = true;
   const put = (k, x, y, z, sx, sy, sz, q) => { const m = inst[k]; if (m.count >= m.instanceMatrix.count) return; M.compose(Pv.set(x, y, z), q || Q.identity(), S.set(sx, sy, sz)); m.setMatrixAt(m.count++, M); S.set(1, 1, 1); };
   // коробка квартала: стиль, тон и зерно едут в цвете инстанса, шейдер рисует по ним фасад
-  const putWall = (style, tone, x, y, z, sx, sy, sz) => { const m = inst.walls; if (m.count >= m.instanceMatrix.count) return; m.setColorAt(m.count, wallCode(style, tone)); put('walls', x, y, z, sx, sy, sz); };
+  const putWall = (style, tone, x, y, z, sx, sy, sz, o) => { const m = inst.walls; if (m.count >= m.instanceMatrix.count) return; m.setColorAt(m.count, wallCode(style, tone, o)); put('walls', x, y, z, sx, sy, sz); };
+  const flatQ = new THREE.Quaternion().setFromAxisAngle(X, -Math.PI / 2);
+  // бассейн: бортик из светлой плиты и вода чуть выше него; y это уровень, на котором он стоит (земля или кровля)
+  const pool = (x, z, w, d, y = 0) => { putWall('blank', 'paper', x, y + .025, z, w + .14, .05, d + .14); put('pool', x, y + .052, z, w, d, 1, flatQ); };
+  // пергола: четыре стойки и рейки поверх
+  const pergola = (x, y, z, w, d) => { for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) putWall('blank', 'paper', x + sx * (w / 2 - .03), y + .16, z + sz * (d / 2 - .03), .05, .32, .05);
+    for (let i = 0; i < 5; i++) putWall('blank', 'paper', x - w / 2 + (i + .5) * w / 5, y + .34, z, .035, .035, d + .06); };
+  // низкая ограда по периметру участка
+  const fence = (x, z, w, d) => { putWall('blank', 'sunken', x, .07, z + d / 2, w, .14, .05); putWall('blank', 'sunken', x, .07, z - d / 2, w, .14, .05); putWall('blank', 'sunken', x - w / 2, .07, z, .05, .14, d - .05); putWall('blank', 'sunken', x + w / 2, .07, z, .05, .14, d - .05); };
   const tones = ['paper', 'paper', 'paper', 'sunken', 'page', 'tint'];
-  function building(x, z, w, h, d) {
-    if (nearPath(x, h, z, Math.max(w, d) / 2 + .9)) return;
-    const r = rnd(); const st = r < .16 ? 'glass' : r < .36 ? 'balcony' : r < .5 ? 'bands' : r < .62 ? 'ribbon' : 'plain';
-    const tone = tones[Math.floor(rnd() * tones.length)];
-    putWall(st, tone, x, h / 2, z, w, h, d);
-    const b = { position: new THREE.Vector3(x, h / 2, z), geometry: { parameters: { width: w, height: h, depth: d } }, userData: {} }; blocks.push(b);
-    if (pr.lowrise && rnd() < .55) { const rw = Math.max(w, d) * .8; put('roof', x, h + .22, z, rw, .45 + rnd() * .25, rw, Q.setFromAxisAngle(Y, Math.PI / 4)); }
-    else { putWall('blank', 'sunken', x, h + .035, z, w + .1, .07, d + .1); roofRails(w, h, d, x, z);
-      const rr = rnd();
-      if (rr < .28) { const tx = x + (rnd() - .5) * w * .3, tz = z + (rnd() - .5) * d * .3; putWall('blank', 'paper', tx, h + .22, tz, w * .45, .3, d * .45); }
-      else if (rr < .5) { put('garden', x, h + .075, z, w * .7, d * .7, 1, Q.setFromAxisAngle(X, -Math.PI / 2)); put('leaf', x + w * .2, h + .28, z - d * .15, .4, .4, .4); }
-      // блоки кондиционеров и бак на крыше: мелкие коробки тем же инстансом
-      const nu = 1 + Math.floor(rnd() * 3); for (let i = 0; i < nu; i++) putWall('blank', 'sunken', x + (rnd() - .5) * w * .7, h + .13, z + (rnd() - .5) * d * .7, .22 + rnd() * .16, .18, .22 + rnd() * .16); }
-    if (st === 'glass' || st === 'bands') bandsFor(w, h, d, x, z);
-    else balconiesFor(w, h, d, x, z, st !== 'balcony');
+  const pick = a => a[Math.floor(rnd() * a.length)];
+  // дом квартала: o.st стиль фасада, o.tone тон, o.y0 высота основания (башня на подиуме), o.roof: flat, hip, tier, garden, pool, pergola, bare
+  function building(x, z, w, h, d, o = {}) {
+    const y0 = o.y0 || 0, top = y0 + h;
+    if (nearPath(x, top, z, Math.max(w, d) / 2 + .9)) return false;
+    const r = rnd(); const st = o.st || (r < .16 ? 'glass' : r < .36 ? 'balcony' : r < .5 ? 'bands' : r < .62 ? 'ribbon' : 'plain');
+    const tone = o.tone || pick(tones);
+    putWall(st, tone, x, y0 + h / 2, z, w, h, d, y0 ? { noDoor: true } : undefined);
+    blocks.push({ position: new THREE.Vector3(x, top / 2, z), geometry: { parameters: { width: w, height: top, depth: d } }, userData: {} });
+    const roof = o.roof || 'flat';
+    if (roof === 'hip' || roof === 'tier') { const ov = o.ov ?? .22, sy = o.pitch ?? .32; put(roof === 'tier' ? 'hipDark' : 'hip', x, top + sy / 2, z, w / 2 + ov, sy, d / 2 + ov);
+      if (roof === 'tier') put('hipDark', x, top + sy * .72 + .2, z, w * .3 + ov * .5, sy * 1.1, d * .3 + ov * .5); }
+    else if (roof !== 'bare') { putWall('blank', 'sunken', x, top + .035, z, w + .1, .07, d + .1); if (!o.noRails) roofRails(w, top, d, x, z);
+      if (roof === 'garden') { put('garden', x, top + .075, z, w * .72, d * .72, 1, flatQ); put('leaf', x + w * .22, top + .28, z - d * .18, .4, .4, .4); }
+      else if (roof === 'pool') { pool(x - w * .12, z, w * .5, d * .38, top + .07); pergola(x + w * .3, top + .07, z, w * .3, d * .55); }
+      else if (roof === 'pergola') pergola(x + (rnd() - .5) * w * .3, top + .07, z + (rnd() - .5) * d * .2, w * .45, d * .5);
+      else if (!o.noUnits) { const rr = rnd();
+        if (rr < .3) putWall('blank', 'paper', x + (rnd() - .5) * w * .3, top + .22, z + (rnd() - .5) * d * .3, w * .45, .3, d * .45);
+        const nu = 1 + Math.floor(rnd() * 3); for (let i = 0; i < nu; i++) putWall('blank', 'sunken', x + (rnd() - .5) * w * .7, top + .13, z + (rnd() - .5) * d * .7, .22 + rnd() * .16, .18, .22 + rnd() * .16); } }
+    if (o.balc === false) return true;
+    if (st === 'glass' || st === 'bands') bandsFor(w, h, d, x, z, y0);
+    else balconiesFor(w, h, d, x, z, o.balc === 'long' || (st !== 'balcony' && o.balc !== 'each'), y0);
+    return true;
   }
-  const towerZone = (gx, gz) => pr.towers > 0 && gz >= 5 && Math.abs(gx) <= 3;
+  // облик города по исследованию новостроек (issledovanie/arhitektura-gorodov.md): у каждого рынка свои объёмы, этажность и кровли
+  // этаж .55; у моря (ряды 0-1) выше пяти этажей не строим, иначе башни закрывают берег и ориентир в главе II
+  const LOTS = {
+    // Пхукет: широкие малоэтажные корпуса «гребёнкой» вокруг бассейна и виллы-коробки с бассейном вдоль фасада, башен нет
+    phuket(cx, cz, gz) {
+      if (rnd() < .58) { const h = 1.7 + Math.floor(rnd() * 4) * .55, w = 2.3 + rnd() * .4, roof = rnd() < .5 ? 'hip' : 'garden';
+        building(cx, cz - .78, w, h, .95, { st: 'balcony', balc: 'long', tone: pick(['paper', 'paper', 'sunken']), roof, pitch: .26, ov: .25 });
+        building(cx, cz + .78, w, Math.max(1.1, h - .55), .95, { st: 'balcony', balc: 'long', tone: 'paper', roof, pitch: .26, ov: .25 });
+        pool(cx, cz, w * .8, .34); }
+      else for (const s of [-1, 1]) { const w = 1.15 + rnd() * .2, h = rnd() < .5 ? .6 : 1.15, x = cx + s * .72, z = cz - .35;
+        building(x, z, w, h, 1.05, { st: pick(['glass', 'plain']), tone: 'paper', roof: rnd() < .6 ? 'hip' : 'pergola', pitch: .24, ov: .24, balc: false });
+        pool(x, z + .95, w * .85, .34); }
+    },
+    // Дубай: башни на широком подиуме с садом и бассейном на кровле подиума; у моря посёлок двухэтажных вилл за оградой
+    dubai(cx, cz, gz) {
+      if (gz >= 3 || (gz === 2 && rnd() < .5)) { const pw = 2.5 + rnd() * .3, ph = .9 + rnd() * .5, tw = 1.1 + rnd() * .35, th = gz >= 3 ? 4.5 + rnd() * 5.5 : 3.2 + rnd() * 1.6;
+        if (!building(cx, cz, pw, ph, pw, { st: 'ribbon', tone: 'sunken', roof: 'bare', balc: false })) return;
+        putWall('blank', 'sunken', cx, ph + .035, cz, pw + .1, .07, pw + .1); roofRails(pw, ph, pw, cx, cz);
+        put('garden', cx + pw * .2, ph + .075, cz + pw * .22, pw * .5, pw * .4, 1, flatQ); pool(cx + pw * .2, cz + pw * .24, pw * .32, pw * .16, ph + .07);
+        building(cx - pw * .18, cz - pw * .18, tw, th, tw, { y0: ph + .07, st: 'glass', tone: pick(['paper', 'page', 'sunken']), noRails: true }); }
+      else { fence(cx, cz, 2.9, 2.9); for (const [sx, sz] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) building(cx + sx * .68, cz + sz * .68, 1.0, 1.15, .95, { st: 'plain', tone: pick(['paper', 'page']), roof: rnd() < .4 ? 'pergola' : 'flat', noRails: true, balc: false }); }
+    },
+    // Чангу: узкие одно- и двухэтажные виллы с длинным бассейном вдоль участка, многоярусная скатная кровля или плоская терраса
+    canggu(cx, cz, gz) {
+      const n = rnd() < .5 ? 2 : 3, step = 2.8 / n;
+      for (let i = 0; i < n; i++) { const x = cx - 1.4 + step * (i + .5), w = step * .55, h = rnd() < .45 ? .62 : 1.17, tier = rnd() < .45;
+        building(x - step * .14, cz - .2, w, h, 2.0, { st: pick(['glass', 'plain']), tone: pick(['paper', 'paper', 'sunken']), roof: tier ? 'tier' : rnd() < .5 ? 'pergola' : 'flat', pitch: .34, ov: .2, noRails: true, balc: false });
+        pool(x + step * .3, cz - .1, step * .16, 1.8); }
+    },
+    // Стамбул: несколько пластин с ленточными балконами на общем стилобате с торговым этажом; у моря узкие бутиковые дома и сдвоенные виллы за оградой
+    istanbul(cx, cz, gz) {
+      if (gz >= 3) { const ph = .8, pw = 2.8;
+        if (!building(cx, cz, pw, ph, pw, { st: 'ribbon', tone: 'sunken', roof: 'bare', balc: false })) return;
+        putWall('blank', 'sunken', cx, ph + .035, cz, pw + .1, .07, pw + .1); put('garden', cx, ph + .075, cz + .95, pw * .8, .5, 1, flatQ);
+        for (const s of [-1, 1]) { const th = 3.3 + rnd() * 3.3; building(cx + s * .7, cz - .25, .85, th, 2.0, { y0: ph + .07, st: 'bands', tone: pick(['paper', 'page']), noRails: true, noUnits: true });
+          putWall('blank', 'paper', cx + s * .7, ph + .07 + th + .2, cz - .25, .6, .26, 1.4); } }
+      else if (rnd() < .5) { let x = cx - 1.4; while (x < cx + 1.2) { const w = .72 + rnd() * .22, h = 2.2 + Math.floor(rnd() * 4) * .55;
+          building(x + w / 2, cz + (rnd() - .5) * .12, w, h, 1.9 + rnd() * .3, { st: pick(['balcony', 'plain', 'ribbon']), tone: pick(tones), balc: 'each' }); x += w + .07; } }
+      else { fence(cx, cz, 2.9, 2.9); for (const sz of [-1, 1]) { const h = 1.1 + Math.floor(rnd() * 2) * .55, z = cz + sz * .66;
+          building(cx, z, 2.1, h, .95, { st: 'plain', tone: pick(['paper', 'page']), roof: rnd() < .5 ? 'hip' : 'flat', pitch: .3, ov: .12, noRails: true, balc: false });
+          putWall('blank', 'sunken', cx, h / 2 + .02, z + .06, .07, h + .04, 1.07); } }
+    },
+    // Пафос: компактные белые корпуса в 2-4 этажа с перголой и бассейном на плоской кровле, двухэтажные виллы; редкий дом в 6-8 этажей
+    paphos(cx, cz, gz) {
+      const r = rnd();
+      if (r < .08 && gz >= 3) building(cx, cz, 2.0, 3.3 + rnd() * 1.1, 1.7, { st: 'balcony', tone: 'paper', roof: 'pergola' });
+      else if (r < .7) { const h = 1.1 + Math.floor(rnd() * 3) * .55; building(cx + (rnd() - .5) * .3, cz - .2, 2.1 + rnd() * .3, h, 1.5, { st: 'balcony', tone: pick(['paper', 'paper', 'page']), roof: rnd() < .55 ? 'pool' : 'pergola', balc: 'each' });
+        put('garden', cx, .03, cz + 1.05, 2.3, .5, 1, flatQ); }
+      else for (const s of [-1, 1]) { const x = cx + s * .7; building(x, cz - .3, 1.15, 1.15, 1.05, { st: 'plain', tone: 'paper', roof: 'pergola', noRails: true, balc: false }); pool(x, cz + .72, .8, .36); }
+    },
+    // Батуми: стройные башни без подиума с двухцветными панелями, плотным рядом; изредка пара близнецов
+    batumi(cx, cz, gz) {
+      const tall = gz >= 2, tower = (x, z, w, h) => { if (!building(x, z, w, h, w, { st: 'glass', tone: pick(['paper', 'page', 'sunken']), noRails: true })) return;
+        const s = rnd() < .5 ? -1 : 1; putWall('blank', pick(['tint', 'sunken', 'page']), x + s * w * .28, h * .52, z + w / 2 + .03, w * .34, h * .9, .06); };
+      if (rnd() < .18 && tall) { const h = 5 + rnd() * 3.5; tower(cx - .75, cz, 1.05, h); tower(cx + .75, cz, 1.05, h); }
+      else tower(cx + (rnd() - .5) * .4, cz + (rnd() - .5) * .4, 1.3 + rnd() * .35, tall ? 3.5 + rnd() * 6.5 : 2.2 + rnd() * 1.3);
+    },
+  };
+  const lot = LOTS[m.key];
   for (let gx = -5; gx <= 5; gx++) for (let gz = 0; gz <= 6; gz++) {
     if (gx === HOME.gx && gz === HOME.gz) continue;
     if (park(gx, gz)) continue;
-    let h = .8 + rnd() * 1.9; if (towerZone(gx, gz)) h += rnd() * 5 * pr.towers + 1.5; if (pr.lowrise) h = Math.min(h, 2.2);
-    const k = rnd();
-    if (k < .22) { const cx = gx * SP + (rnd() - .5) * .3, cz = Z0 + gz * SP + (rnd() - .5) * .5, w = .9 + rnd() * .35; building(cx - w / 2 - .17, cz, w, h, 1.7 + rnd() * .7); building(cx + w / 2 + .17, cz, w, Math.max(.8, h * (.6 + rnd() * .6)), 1.7 + rnd() * .7); }
-    else if (k < .38) { const cx = gx * SP + (rnd() - .5) * .2, cz = Z0 + gz * SP + (rnd() - .5) * .2, w = 1.4 + rnd() * .3, d = 1.7 + rnd() * .6; building(cx, cz, w, h, d); building(cx + w / 2 + .15, cz + d / 2 - .47, .7, Math.min(h * .5, 1.1), .9); } // пристройка утоплена на .02: в одной плоскости с фасадом дома их стены штриховались
-    else building(gx * SP + (rnd() - .5) * .5, Z0 + gz * SP + (rnd() - .5) * .5, 1.6 + rnd() * .9, h, 1.6 + rnd() * .9);
+    lot(gx * SP + (rnd() - .5) * .2, Z0 + gz * SP + (rnd() - .5) * .2, gz);
   }
   balc.count = bi; rails.count = ri; bands.count = ni; balc.instanceMatrix.needsUpdate = rails.instanceMatrix.needsUpdate = bands.instanceMatrix.needsUpdate = true; balc.castShadow = rails.castShadow = bands.castShadow = false; rails.frustumCulled = false; g.add(balc); g.add(rails); g.add(bands);
   // дальний силуэт: башни за кварталом, где рынок высотный
@@ -987,6 +1065,8 @@ function applyNight(n, force) {
   facade.userData.u.uNight.value = n; facade.userData.u.uLit.value.setHex(V.accent2).lerp(new THREE.Color(V.tint), n);
   if (home.hallWall) home.hallWall.emissiveIntensity = Math.max(home.hall.userData.door || 0, n * .3);
   if (home.lamps) for (const l of home.lamps) { l.material.emissive.setHex(V.tint); l.material.emissiveIntensity = n * .6; }
+  // планета вечером: шар темнеет, суша светлеет, иначе зелёные точки тонут в сером шаре
+  sphere.material.color.setHex(V.paper).lerp(new THREE.Color(V.ink2), n * .8); landMat.color.setHex(V.accent).lerp(new THREE.Color(V.tint), n * .55);
 }
 // переключатели вечера: в шапке и в сцене, оба ведут одну тему страницы и сцены; выбор помнится в браузере
 const nightBtns = [...document.querySelectorAll('.night')];
