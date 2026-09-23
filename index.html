@@ -255,7 +255,7 @@ td small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 40
   .hud .hud__sep, .hud .night { display: none; }
   .hud__mk { width: 100%; padding: 0 6px; mask-image: linear-gradient(to right, transparent, #000 10px, #000 calc(100% - 14px), transparent); -webkit-mask-image: linear-gradient(to right, transparent, #000 10px, #000 calc(100% - 14px), transparent); }
   .hint { left: var(--gutter); right: var(--gutter); top: 76px; white-space: normal; text-align: center; line-height: 1.4; }
-  .co { max-width: calc(100vw - 32px); white-space: normal; text-align: center; }
+  .co { width: max-content; max-width: min(300px, calc(100vw - 32px)); white-space: normal; text-align: center; }
   .chapter, .chapter--r { min-height: 150vh; align-items: flex-start; justify-content: flex-start; padding: 48vh var(--gutter) 0; }
   .panel { position: sticky; top: 48vh; transform: none; max-width: none; width: 100%; max-height: 50vh; overflow: auto; padding: 16px 18px; gap: 10px; }
   .panel h2 { font-size: 22px; } .panel .body { font-size: 14px; } .panel .pick__row { display: none; } .panel .stages { font-size: 13px; gap: 4px; }
@@ -649,7 +649,7 @@ function noise(x, z) { const xi = Math.floor(x), zi = Math.floor(z), fx = smooth
 const SP = 3.7, Z0 = -3.6, HOME = { gx: 0, gz: 2 }; const homeZ = Z0 + HOME.gz * SP;
 const SHORE = -6.05;
 let built = null; // всё, что зависит от выбранного рынка
-let seaMat, flats = [], blocks = [], home = {}, stones = [], cars = [], boats = [];
+let lmGroup = null, seaMat, flats = [], blocks = [], home = {}, stones = [], cars = [], boats = [];
 
 // камера в системе квартала (без масштаба): опорные точки глав II..V; дорожка проверяется на пересечение с домами и деревьями
 const KEY = {
@@ -856,7 +856,7 @@ function buildCity(m) {
   for (let i = 0; i < 24; i++) { const gx = Math.floor(rnd() * 11) - 5, gz = Math.floor(rnd() * 7); if (park(gx, gz)) continue; tree(gx * SP + SP / 2 + (rnd() - .5) * .3, Z0 + gz * SP + (rnd() - .5) * 2.4, .7 + rnd() * .3, pr.palms && rnd() < .4); }
   for (const k in inst) { const m = inst[k]; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; m.frustumCulled = false; if (m.count) g.add(m); }
   for (const m of treeSets) { m.instanceMatrix.needsUpdate = true; m.frustumCulled = false; if (m.count) g.add(m); }
-  buildLandmark(g, m.key);
+  { const lg = new THREE.Group(); g.add(lg); buildLandmark(lg, m.key); lmGroup = lg; }
   // машины на улицах вне парка и лодки в море: движутся, пока город в кадре; теней не отбрасывают, карта теней в покое не пересчитывается
   cars = []; boats = [];
   { const carGeo = new THREE.BoxGeometry(.44, .15, .22), cabGeo = new THREE.BoxGeometry(.24, .1, .2), carTones = [V.ink3, V.control, V.paper, V.accent2, V.ink2];
@@ -1153,6 +1153,8 @@ function frame(p, idle, dt) {
   const push = pushFor(mobile);
   const side = mobile ? 0 : -2.9, camA = new THREE.Vector3(side, .9, lerp(mobile ? 22 : 14.5, mobile ? 12 : 9.2, t1)), lookA = new THREE.Vector3(side, mobile ? lerp(-.6, .15, t1) : .15, 0);
   const { cam: lc, look: ll } = camLocal(t3, t4, t5, push);
+  // телефон в главах «Город» и «Дом»: камера стоит там же, но смотрит левее и выше и чуть отъезжает объективом, чтобы в узкий кадр попал ориентир на берегу; к двери всё возвращается
+  if (mobile) { const k = (1 - t4) * smooth(t2 * 2), f = 52 + lerp(16, 20, t3) * k; ll.x += lerp(-5.5, -3, t3) * k; ll.y += lerp(7, 2.5, t3) * k; if (camera.fov !== f) { camera.fov = f; camera.updateProjectionMatrix(); } }
   const o0 = camA.clone().sub(city.position).applyQuaternion(tmpQ.copy(city.quaternion).invert());
   const camW = W(o0.lerp(lc, w)), lookW = W(ll, cs, cs * grow), upW = tmpV.set(0, 1, 0).applyQuaternion(city.quaternion);
   camera.position.copy(t2 > 0 ? camW : camA); camera.up.set(0, 1, 0).lerp(upW, w).normalize();
@@ -1304,5 +1306,7 @@ window.__hb = { grow() { return swapGrow; },
     return out; }, check(push = 1) { const bad = []; for (let i = 0; i <= 300; i++) { const t = i / 300 * 3; const c = camLocal(smooth(clamp(t, 0, 1)), smooth(clamp(t - 1, 0, 1)), smooth(clamp(t - 2, 0, 1)), push).cam;
   for (const b of blocks) { const g = b.geometry.parameters; if (Math.abs(c.x - b.position.x) < g.width / 2 + .3 && Math.abs(c.z - b.position.z) < g.depth / 2 + .3 && c.y < g.height + .3) bad.push([t.toFixed(2), b.position.x.toFixed(1), b.position.z.toFixed(1)]); }
   if (Math.abs(c.x) < 1.8 && Math.abs(c.z - homeZ) < 1.8 && c.y < home.roofY + .3) bad.push([t.toFixed(2), 'home']); } return bad; }, setMarket, home: () => home, blocks: () => blocks.length, info: () => ({ calls: renderer.info.render.calls, tris: renderer.info.render.triangles, lines: renderer.info.render.lines }), pins: () => pins.map(q => { const v = q.g.getWorldPosition(new THREE.Vector3()).project(camera); return { name: q.c.name, market: !!q.market, x: (v.x + 1) / 2 * stage.clientWidth, y: (1 - v.y) / 2 * stage.clientHeight + stage.getBoundingClientRect().top, front: q.normal.clone().applyQuaternion(globe.quaternion).z > .3 }; }), state: () => ({ yaw: userYaw, pitch: userPitch, focus: focusPin && focusPin.c.name, market: market.key }) };
+// экранные рамки ориентира и дома в долях кадра (-1..1): проверка, что ориентир попадает в кадр
+window.__hb.proj = () => { const B = new THREE.Box3(), out = {}; const P = v => v.project(camera); const box = o => { B.setFromObject(o); let x0 = 9, x1 = -9, y0 = 9, y1 = -9; for (const x of [B.min.x, B.max.x]) for (const y of [B.min.y, B.max.y]) for (const z of [B.min.z, B.max.z]) { const v = P(new THREE.Vector3(x, y, z)); x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); } return [x0, x1, y0, y1].map(n => +n.toFixed(2)); }; if (lmGroup) out.lm = box(lmGroup); out.home = box(home.group); return out; };
 window.__hb.stops = () => Array.from({ length: N + 1 }, (_, k) => Math.round(stopY(k)));
 </script>
