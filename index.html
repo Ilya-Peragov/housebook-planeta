@@ -828,7 +828,7 @@ function buildHome(g, m) {
     // забор с калиткой: дорожка сделки начинается у двери и проходит в проём, камни не лежат под стеной
     for (const [x0, x1] of [[-2.3, .55], [1.65, 1.9]]) { const fence = box(x1 - x0, .35, .06, V.sunken, { edgeAlpha: .2 }); fence.position.set((x0 + x1) / 2, .29, 2.05); H.add(fence); }
     for (const x of [.55, 1.65]) ip(.1, .45, .1, x, .34, 2.05, V.control);
-    { const hinge = new THREE.Group(); hinge.position.set(.62, .12, 2.05); hinge.rotation.y = 1.2; H.add(hinge); // створка открыта внутрь двора, к дому
+    { const hinge = new THREE.Group(); hinge.position.set(.62, .12, 2.05); hinge.rotation.y = -1.75; H.add(hinge); // створка открыта наружу, на улицу, мимо дорожки
       const leaf = box(.96, .3, .03, V.control, { edges: false, ao: false }); leaf.position.set(.48, .19, 0); hinge.add(leaf);
       for (const x of [.2, .48, .76]) { const bar = box(.02, .3, .035, V.ink3, { edges: false, ao: false }); bar.position.set(x, .19, 0); hinge.add(bar); } }
     for (const [x, z] of [[.85, 1.55], [.95, 1.8]]) ip(.34, .02, .2, x, .13, z, floorTone); // плитки от крыльца к калитке
