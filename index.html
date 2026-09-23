@@ -712,7 +712,8 @@ function buildCity(m) {
   const treeSets = [trunkI, palmI, ...crownI]; for (const m of treeSets) { m.count = 0; m.castShadow = true; }
   const Mt = new THREE.Matrix4(), Ml = new THREE.Matrix4(), Mw = new THREE.Matrix4(), Qt = new THREE.Quaternion(), St = new THREE.Vector3(), Pt = new THREE.Vector3();
   const putTree = (m, mat) => { if (m.count < 72) m.setMatrixAt(m.count++, mat); };
-  function tree(x, z, s = 1, palm) { if (PATH.some(q => Math.hypot(q.x - x, q.z - z) < 2.4 && q.y < 7.5)) return;
+  const lmSpot = LM_SPOT[m.key];
+  function tree(x, z, s = 1, palm) { if (PATH.some(q => Math.hypot(q.x - x, q.z - z) < 2.4 && q.y < 7.5)) return; if (lmSpot && Math.hypot(lmSpot[0] - x, lmSpot[1] - z) < lmSpot[2]) return;
     const crown = palm ? null : crownI[Math.floor(rnd() * 3) * 2 + (rnd() < .5 ? 0 : 1)], ry = rnd() * 3, tilt = palm ? (rnd() - .5) * .16 : 0;
     Mt.compose(Pt.set(x, 0, z), Qt.setFromAxisAngle(Zv, tilt), St.set(1, 1, 1));
     Ml.compose(Pt.set(0, (palm ? .6 : .35) * s, 0), Qt.identity(), St.set(s, palm ? 1.7 * s : s, s)); putTree(trunkI, Mw.multiplyMatrices(Mt, Ml));
@@ -777,6 +778,7 @@ function buildCity(m) {
   for (let i = 0; i < 24; i++) { const gx = Math.floor(rnd() * 11) - 5, gz = Math.floor(rnd() * 7); if (park(gx, gz)) continue; tree(gx * SP + SP / 2 + (rnd() - .5) * .3, Z0 + gz * SP + (rnd() - .5) * 2.4, .7 + rnd() * .3, pr.palms && rnd() < .4); }
   for (const k in inst) { const m = inst[k]; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; m.frustumCulled = false; if (m.count) g.add(m); }
   for (const m of treeSets) { m.instanceMatrix.needsUpdate = true; m.frustumCulled = false; if (m.count) g.add(m); }
+  buildLandmark(g, m.key);
   // машины на улицах вне парка и лодки в море: движутся, пока город в кадре; теней не отбрасывают, карта теней в покое не пересчитывается
   cars = []; boats = [];
   { const carGeo = new THREE.BoxGeometry(.44, .15, .22), cabGeo = new THREE.BoxGeometry(.24, .1, .2), carTones = [V.ink3, V.control, V.paper, V.accent2, V.ink2];
@@ -821,6 +823,74 @@ const paneMat = (dark = false) => { const m = new THREE.MeshStandardMaterial({ c
       .replace('#include <metalnessmap_fragment>', ' float metalnessFactor = mix(mix(.2, .35, uDark), 0., paneMull);')
       .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n totalEmissiveRadiance += uLit * uNight * (1. - paneMull) * .5;');
   }; m.customProgramCacheKey = () => 'hb-pane'; return m; };
+// ориентир города у кромки моря слева от квартала: узнаётся одним силуэтом, цвета только из палитры сайта
+// море и земля прогнуты по кривизне планеты, поэтому основание каждой детали ставится на уровень воды в своей точке
+const LM_SPOT = { phuket: [-15, -12.5, 4.5], dubai: [-15, -6.9, 2.9], canggu: [-14, -9.5, 3.4], istanbul: [-15, -9.5, 3.6], paphos: [-14, -11.5, 3.5], batumi: [-15, -7.2, 2] }; // x левее дома: в главе «Дом» ориентир виден сбоку от башни, а не за ней
+const seaY = (x, z) => .04 - (x * x + z * z) / (2 * R_END);
+function buildLandmark(g, key) {
+  const sp = LM_SPOT[key]; if (!sp) return; const [cx, cz] = sp;
+  const add = (geo, mat, x, y, z, ry = 0) => { const o = new THREE.Mesh(geo, mat); o.position.set(x, y, z); o.rotation.y = ry; o.castShadow = o.receiveShadow = true; g.add(o); return o; };
+  const white = wall(V.paper, { rough: .7 }), stone = wall(V.sunken, { rough: .9 }), dark = wall(V.ink2, { rough: .95 }), mid = wall(V.control, { rough: .9 }), land = wall(new THREE.Color(V.tint).lerp(new THREE.Color(V.accent2), .3).getHex(), { rough: 1 }), crown = wall(V.accent, { rough: .95 });
+  // холм-мыс из воды: купол по кривизне, низ уходит под воду
+  const mound = (x, z, rx, rz, h) => { const geo = new THREE.SphereGeometry(1, 28, 14, 0, Math.PI * 2, 0, Math.PI / 2); geo.scale(rx, h, rz); const o = add(geo, land, x, seaY(x, z) - .15, z); for (let i = 0; i < 9; i++) { const a = i * 2.4, r = .45 + (i % 3) * .14, px = Math.cos(a) * r, pz = Math.sin(a) * r, py = h * Math.sqrt(Math.max(0, 1 - px * px - pz * pz)); if (r < .5) continue; add(new THREE.IcosahedronGeometry(.32 + (i % 2) * .1, 1), crown, x + px * rx, o.position.y + py + .12, z + pz * rz); } return o; };
+  if (key === 'phuket') {
+    // Большой Будда на холме: сидящая белая фигура упрощена до широкого основания, плеч и головы с ушнишей
+    const top = mound(cx, cz, 3.8, 2.8, 1.9).position.y + 1.9 - .05;
+    add(new THREE.CylinderGeometry(1.15, 1.3, .28, 24), white, cx, top + .14, cz);
+    // скрещённые ноги шире плеч, торс сужается к шее, голова с ушнишей: так силуэт читается сидящей фигурой, а не колоколом
+    const lap = new THREE.SphereGeometry(1, 24, 12); lap.scale(1.25, .5, .85); add(lap, white, cx, top + .38, cz + .1);
+    const body = new THREE.LatheGeometry([[0, 0], [.72, 0], [.78, .35], [.7, .8], [.62, 1.25], [.46, 1.5], [.2, 1.62], [0, 1.64]].map(([r, y]) => new THREE.Vector2(r, y)), 24); body.scale(1, 1, .8);
+    add(body, white, cx, top + .45, cz - .12);
+    add(new THREE.SphereGeometry(.36, 20, 14), white, cx, top + .45 + 1.9, cz - .08);
+    add(new THREE.ConeGeometry(.16, .36, 14), white, cx, top + .45 + 2.33, cz - .08);
+  } else if (key === 'dubai') {
+    // Дубай-Фрейм на пляже: две башни и перемычка, открытая рама; ограничений на образ исследование не нашло (Бурдж-Халифа и Бурдж-аль-Араб защищены)
+    const y0 = .02, fh = 5.2, fw = 3.2;
+    add(new THREE.BoxGeometry(fw + 1.2, .16, 1.1), stone, cx, y0 + .08, cz);
+    for (const s of [-1, 1]) add(new THREE.BoxGeometry(.62, fh, .62), white, cx + s * fw / 2, y0 + fh / 2 + .16, cz);
+    add(new THREE.BoxGeometry(fw + .62, .5, .62), white, cx, y0 + fh + .16 - .25, cz);
+    add(new THREE.BoxGeometry(fw - .62, .08, .5), mid, cx, y0 + fh + .16 - .54, cz);
+    // Пальма Джумейра в море: ствол к берегу, листья и полумесяц волнолома; читается сверху, пока камера спускается; каждая полоса лежит на воде в своей точке
+    const px = -2, pz = -13.2, sand = wall(V.paper, { rough: 1 }), strip = (x, z, w, d, ry) => { const b = add(new THREE.BoxGeometry(w, .5, d), sand, x, seaY(x, z) - .1, z, ry); b.castShadow = false; };
+    strip(px, pz + 1.9, .6, 6.6, 0);
+    for (let i = 0; i < 8; i++) { const z = pz + 4.4 - i * .8, len = 3 - Math.abs(i - 3.5) * .3; for (const s of [-1, 1]) strip(px + s * (len / 2 + .3), z, len, .24, 0); }
+    for (let i = 0; i <= 20; i++) { const a = Math.PI * (.08 + .84 * i / 20), x = px + Math.cos(a) * 5.4, z = pz + 1.2 - Math.sin(a) * 5; strip(x, z, .3, .95, Math.PI / 2 - a); }
+  } else if (key === 'canggu') {
+    // Пура Бату Болонг: тёмная скала со сквозным проёмом в прибое, на ней храм-меру из пяти соломенных ярусов
+    const y0 = seaY(cx, cz);
+    const rock = (x, z, sx, sy, sz) => { const geo = new THREE.DodecahedronGeometry(1, 0); geo.scale(sx, sy, sz); add(geo, dark, x, y0 + sy * .35, z); };
+    rock(cx - .9, cz, 1.1, 1.3, 1.3); rock(cx + .9, cz, 1.1, 1.2, 1.3);
+    add(new THREE.BoxGeometry(2.6, .45, 1.8), dark, cx, y0 + 1.25, cz);
+    const base = y0 + 1.48; add(new THREE.BoxGeometry(1.1, .3, 1.1), mid, cx, base + .15, cz);
+    for (let i = 0; i < 5; i++) { const r = .78 - i * .13, y = base + .45 + i * .34; add(new THREE.CylinderGeometry(.05, .05, .16, 6), dark, cx, y - .08, cz); add(new THREE.ConeGeometry(r, .2, 4), dark, cx, y + .1, cz, Math.PI / 4); }
+    // расколотые ворота канди-бентар на пляже: две ступенчатые половины с проходом
+    for (const s of [-1, 1]) for (let i = 0; i < 4; i++) add(new THREE.BoxGeometry(.5 - i * .1, .32, .5 - i * .1), mid, cx + 3.2 + s * .42, .02 + .16 + i * .32, -6.9);
+  } else if (key === 'istanbul') {
+    // Галатская башня на холме над проливом: каменный цилиндр, галерея и острый конус
+    const top = mound(cx, cz, 3, 2.4, 1.2).position.y + 1.2 - .05;
+    add(new THREE.CylinderGeometry(.62, .72, 4.2, 20), stone, cx, top + 2.1, cz);
+    add(new THREE.CylinderGeometry(.8, .8, .5, 20), white, cx, top + 4.45, cz);
+    add(new THREE.ConeGeometry(.78, 1.7, 20), dark, cx, top + 4.7 + .85, cz);
+  } else if (key === 'paphos') {
+    // скала Афродиты: светлый известняковый пик из воды и две скалы поменьше
+    const y0 = seaY(cx, cz);
+    const rockMat = wall(new THREE.Color(V.sunken).lerp(new THREE.Color(V.control), .45).getHex(), { rough: 1 });
+    // глыба из воды: многогранник с неровными вершинами, верх смещён к морю; рядом две скалы поменьше
+    const rock = (x, z, sx, sy, sz, ry, lean) => { const geo = new THREE.DodecahedronGeometry(1, 1); const a = geo.attributes.position;
+      for (let i = 0; i < a.count; i++) { const k = .78 + hash(Math.round(a.getX(i) * 9) + x, Math.round(a.getY(i) * 9) + Math.round(a.getZ(i) * 9) * 3) * .44, t = Math.max(0, a.getY(i)); a.setXYZ(i, a.getX(i) * k * (1 - t * .45) + t * lean, a.getY(i) * k, a.getZ(i) * k * (1 - t * .45)); }
+      geo.computeVertexNormals(); geo.scale(sx, sy, sz); add(geo, rockMat, x, y0 + sy * .45, z, ry); };
+    rock(cx, cz, 1.5, 2.3, 1.2, .3, .35); rock(cx + 1.6, cz + .8, .8, 1.1, .7, 1.4, .1); rock(cx - 1.4, cz + 1.1, .55, .7, .5, 2.6, 0);
+  } else if (key === 'batumi') {
+    // Алфавитная башня на бульваре: тонкий ствол, двойная спираль и шар наверху
+    const y0 = .02, H = 7;
+    add(new THREE.CylinderGeometry(.75, .8, .2, 24), stone, cx, y0 + .1, cz);
+    add(new THREE.CylinderGeometry(.13, .16, H, 12), white, cx, y0 + H / 2, cz);
+    for (const ph of [0, Math.PI]) { const pts = []; for (let i = 0; i <= 120; i++) { const t = i / 120, a = ph + t * Math.PI * 2 * 4.5; pts.push(new THREE.Vector3(Math.cos(a) * .48, .3 + t * (H - .9), Math.sin(a) * .48)); }
+      add(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 240, .06, 6), mid, cx, y0, cz); }
+    add(new THREE.CylinderGeometry(.5, .5, .16, 20), white, cx, y0 + H - .45, cz);
+    add(new THREE.SphereGeometry(.55, 24, 16), white, cx, y0 + H + .15, cz);
+  }
+}
 function buildHome(g, m) {
   home = { group: new THREE.Group(), glass: [], frames: [] }; home.group.position.set(0, 0, homeZ); g.add(home.group); const H = home.group;
   const FH = .72, floors = m.home.floors, apt = m.home.apt;
