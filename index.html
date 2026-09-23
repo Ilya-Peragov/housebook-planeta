@@ -87,7 +87,16 @@ html.dusk .cloud { --c1: rgba(74,84,76,.96); --c2: rgba(102,112,106,.85); --c0: 
 .night[aria-pressed="true"]::before { background: var(--paper); box-shadow: inset -3px -3px 0 0 var(--accent); }
 .hint { position: absolute; right: var(--gutter); top: 76px; padding: 8px 14px; border-radius: 999px; background: var(--glass); backdrop-filter: blur(6px); font: 500 11px/1 "Geologica", sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); opacity: 0; transition: opacity .3s; pointer-events: none; white-space: nowrap; }
 .hint.on { opacity: 1; }
-.skip { position: absolute; right: var(--gutter); bottom: 22px; z-index: 4; display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(6px); box-shadow: var(--e2); font: 500 13px/1 "IBM Plex Sans", sans-serif; color: var(--ink-2); cursor: pointer; transition: border-color .15s, color .15s; }
+/* точки глав и пропуск сцены одной группой в углу кадра; точка, взведённая первым щелчком колеса, мигает */
+.rail { position: absolute; right: var(--gutter); bottom: 22px; z-index: 4; display: flex; align-items: center; gap: 10px; }
+.dots { display: flex; gap: 2px; padding: 3px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(6px); box-shadow: var(--e2); }
+.dots button { min-width: 30px; height: 28px; padding: 0 6px; border: 0; border-radius: 999px; background: none; font: 500 12px/1 "IBM Plex Sans", sans-serif; color: var(--ink-3); cursor: pointer; transition: background .15s, color .15s; }
+.dots button:hover { color: var(--ink); }
+.dots button[aria-current] { background: var(--accent); color: var(--on-accent); }
+.dots button.dot--armed { animation: dot-armed .5s ease-in-out infinite alternate; }
+@keyframes dot-armed { to { background: color-mix(in srgb, var(--accent-hover) 24%, transparent); color: var(--ink); } }
+.dots button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.skip { display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--glass); backdrop-filter: blur(6px); box-shadow: var(--e2); font: 500 13px/1 "IBM Plex Sans", sans-serif; color: var(--ink-2); cursor: pointer; transition: border-color .15s, color .15s; }
 .skip:hover { color: var(--ink); border-color: var(--control); }
 .skip:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .story { position: relative; z-index: 2; margin-top: -100vh; pointer-events: none; }
@@ -226,7 +235,9 @@ td small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 40
 @media (min-width: 900px) and (max-height: 760px) { .panel { top: calc(50vh + 28px); gap: 8px; padding: 16px 20px 14px; } .panel h2 { font-size: 22px; } .panel .body { font-size: 14px; line-height: 1.5; } .figure { padding: 8px 12px; } .stages { gap: 3px; font-size: 13px; } }
 @media (min-width: 900px) and (max-height: 620px) { .panel .pick__row { display: none; } .panel h2 { font-size: 20px; } .panel .body { font-size: 13px; } .figure { font-size: 12px; gap: 2px 10px; } .stages { gap: 1px; font-size: 12px; } }
 /* средние экраны: панель главы доходит до верха сцены, ряд городов уходит вниз */
-@media (max-width: 1099px) and (min-width: 900px) { .skip { bottom: auto; top: 76px; } .hud { top: auto; bottom: 28px; } .hint { top: auto; bottom: 28px; left: auto; max-width: 330px; white-space: normal; line-height: 1.5; text-align: right; } }
+/* средние низкие окна: подсказка про планету не ложится на первый экран */
+@media (min-width: 900px) and (max-width: 1099px) and (max-height: 700px) { .hint { display: none; } }
+@media (max-width: 1099px) and (min-width: 900px) { .rail { bottom: auto; top: 76px; flex-direction: column-reverse; align-items: flex-end; gap: 8px; } .hud { top: auto; bottom: 28px; } .hint { top: auto; bottom: 28px; left: auto; max-width: 330px; white-space: normal; line-height: 1.5; text-align: right; } }
 @media (max-width: 1099px) { .cards { grid-template-columns: repeat(3, 1fr); } .who { grid-template-columns: repeat(3, 1fr); } .stats { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 899px) {
   :root { --gutter: 16px; }
@@ -248,7 +259,7 @@ td small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 40
   .panel { position: sticky; top: 48vh; transform: none; max-width: none; width: 100%; max-height: 50vh; overflow: auto; padding: 16px 18px; gap: 10px; }
   .panel h2 { font-size: 22px; } .panel .body { font-size: 14px; } .panel .pick__row { display: none; } .panel .stages { font-size: 13px; gap: 4px; }
   .co--pin { display: none; }
-  .skip { display: none; }
+  .rail { display: none; }
   .theatre { margin-top: 0; } /* на телефоне планета в верхней половине кадра, под шапку её не прячем */
   /* на телефоне этап помечается номером прямо на камне, полные названия есть в списке панели */
   .co--stage { padding: 0; font-size: 0; background: none; border: 0; box-shadow: none; backdrop-filter: none; transform: translate(-50%, -50%); }
@@ -263,7 +274,7 @@ td small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 40
   .foot .right { margin-left: 0; }
 }
 @media (max-width: 480px) { .cards { grid-template-columns: 1fr; } }
-@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .co, .hud, .bar__fill, .card, .reveal { transition: none; } .cue::before { animation: none; } .js .reveal:not(.in) { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .dots button.dot--armed { animation: none; background: color-mix(in srgb, var(--accent-hover) 24%, transparent); } .co, .hud, .bar__fill, .card, .reveal { transition: none; } .cue::before { animation: none; } .js .reveal:not(.in) { opacity: 1; transform: none; } }
 </style>
 <header class="top"><a class="brand" href="https://housebook.global/">Housebook</a><nav class="nav" aria-label="Разделы"><a href="https://housebook.global/nedvizhimost">Недвижимость</a><a href="https://housebook.global/investitsii">Инвестиции</a><a href="https://housebook.global/garantii">Гарантии</a><a href="https://housebook.global/blog">Блог</a></nav><button type="button" class="night" aria-pressed="false"><span>Вечер</span></button><a class="btn btn--acc" href="https://housebook.global/nedvizhimost">Открыть каталог</a></header>
 <main>
@@ -271,7 +282,7 @@ td small { display: block; font-size: 12px; color: var(--ink-3); font-weight: 40
   <div class="stage" id="stage"><canvas id="scene" aria-label="Объёмная сцена: планета, город, дом" role="img"></canvas><div class="cloud" id="cloud" aria-hidden="true"><i></i><i></i><i></i></div>
     <div class="hud" id="hud"><div class="hud__mk" role="group" aria-label="Куда спускаемся"><button type="button" class="mk" data-key="phuket" aria-pressed="true">Пхукет <small>Таиланд</small></button><button type="button" class="mk" data-key="dubai" aria-pressed="false">Дубай <small>ОАЭ</small></button><button type="button" class="mk" data-key="canggu" aria-pressed="false">Чангу <small>Индонезия</small></button><button type="button" class="mk" data-key="istanbul" aria-pressed="false">Стамбул <small>Турция</small></button><button type="button" class="mk" data-key="paphos" aria-pressed="false">Пафос <small>Республика Кипр</small></button><button type="button" class="mk" data-key="batumi" aria-pressed="false">Батуми <small>Грузия</small></button></div><span class="hud__sep"></span><button type="button" class="night" id="night" aria-pressed="false"><span>Вечер</span></button></div>
     <p class="hint" id="hint">Планету можно крутить, булавка поворачивает её к стране</p>
-    <button type="button" class="skip" id="skip">Пропустить сцену <span aria-hidden="true">&darr;</span></button>
+    <nav class="rail" id="rail" aria-label="Главы сцены"><div class="dots"><button type="button" title="Планета" aria-label="Глава I: Планета">I</button><button type="button" title="Город" aria-label="Глава II: Город">II</button><button type="button" title="Дом" aria-label="Глава III: Дом">III</button><button type="button" title="Дверь" aria-label="Глава IV: Дверь">IV</button><button type="button" title="Сделка" aria-label="Глава V: Сделка">V</button></div><button type="button" class="skip" id="skip">Пропустить сцену <span aria-hidden="true">&darr;</span></button></nav>
   </div>
   <p class="sr-only">Иллюстрация: планета с точечными материками и одиннадцатью отмеченными странами. По мере прокрутки камера снижается к выбранному городу: квартал у моря, один дом с подсвеченной квартирой, открытая дверь и дорожка из шести этапов сделки.</p>
   <div class="story">
@@ -405,7 +416,7 @@ document.documentElement.classList.add('js');
     e.target.querySelectorAll('.bar__fill').forEach(f => { if (reduced) return; const h = f.style.getPropertyValue('--h'); f.style.setProperty('--h', '0'); requestAnimationFrame(() => requestAnimationFrame(() => f.style.setProperty('--h', h))); }); }), { threshold: .2 });
   document.querySelectorAll('.reveal, .bars').forEach(el => io.observe(el)); })();
 // подсказка про интерактив: один раз, пока пользователь на первом экране
-(() => { const h = document.getElementById('hint'); let shown = false; const on = () => { if (shown) return; shown = true; h.classList.add('on'); setTimeout(() => h.classList.remove('on'), 4200); }; setTimeout(on, 1800); addEventListener('scroll', () => { if (scrollY > innerHeight * .4) h.classList.remove('on'); }, { passive: true }); })();
+(() => { const h = document.getElementById('hint'); let shown = false; const on = () => { if (shown || scrollY > innerHeight * .4) return; shown = true; h.classList.add('on'); setTimeout(() => h.classList.remove('on'), 4200); }; setTimeout(on, 1800); addEventListener('scroll', () => { if (scrollY > innerHeight * .4) h.classList.remove('on'); }, { passive: true }); })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>const HB_COUNTRIES=[{"name":"ОАЭ","n":454,"path":"https://housebook.global/nedvizhimost/uae","lat":24.4,"lon":54.4},{"name":"Таиланд","n":331,"path":"https://housebook.global/nedvizhimost/thailand","lat":8,"lon":98.3},{"name":"Индонезия","n":150,"path":"https://housebook.global/nedvizhimost/indonesia","lat":-8.4,"lon":115.2},{"name":"Турция","n":70,"path":"https://housebook.global/nedvizhimost/turkey","lat":41,"lon":29},{"name":"ТРСК (Северный Кипр)","n":61,"path":"https://housebook.global/nedvizhimost/northern-cyprus","lat":35.3,"lon":33.6},{"name":"Грузия","n":40,"path":"https://housebook.global/nedvizhimost/georgia","lat":41.6,"lon":41.6},{"name":"Республика Кипр","n":39,"path":"https://housebook.global/nedvizhimost/cyprus","lat":34.8,"lon":32.6},{"name":"Азербайджан","n":23,"path":"https://housebook.global/nedvizhimost/azerbaijan","lat":40.4,"lon":49.9},{"name":"Саудовская Аравия","n":17,"path":"https://housebook.global/nedvizhimost/saudi-arabia","lat":24.7,"lon":46.7},{"name":"Чили","n":16,"path":"https://housebook.global/nedvizhimost/chile","lat":-33.4,"lon":-70.6},{"name":"Панама","n":8,"path":"https://housebook.global/nedvizhimost/panama","lat":9,"lon":-79.5}];const HB_MARKETS=[{"key":"phuket","country":"Таиланд","city":"Пхукет","lat":7.9,"lon":98.3,"seed":11,"median":"$3,056","entry":"$46,910","n":286,"path":"https://housebook.global/nedvizhimost/thailand/phuket","profile":{"hills":0.6,"towers":0,"palms":true,"islands":true},"home":{"name":"Botanica Chalong Bay","sqm":"$3,040","vs":"на 1% ниже медианы города","price":"","kind":"Вилла на этапе строительства. План оплаты из 7 шагов открыт на странице дома","path":"https://housebook.global/nedvizhimost/thailand/phuket/botanica-chalong-bay-ng-bay","type":"villa","floors":2,"apt":1,"plan":true,"due":""}},{"key":"dubai","country":"ОАЭ","city":"Дубай","lat":25.2,"lon":55.3,"seed":23,"median":"$5,375","entry":"$122,554","n":372,"path":"https://housebook.global/nedvizhimost/uae/dubai","profile":{"hills":0,"towers":1,"palms":true,"islands":false},"home":{"name":"Albero by Emaar","sqm":"AED 18,086","vs":"","price":"от AED 1,810,000","kind":"Кондоминиум, 1-3 спальни, 70 м². Сдача Q3 2029","path":"https://housebook.global/nedvizhimost/uae/dubai/albero-by-emaar-8d235b","type":"tower","floors":9,"apt":6,"due":"Q3 2029"}},{"key":"canggu","country":"Индонезия","city":"Чангу","lat":-8.65,"lon":115.14,"seed":37,"median":"$2,504","entry":"$89,000","n":40,"path":"https://housebook.global/nedvizhimost/indonesia/canggu","profile":{"hills":0.8,"towers":0,"palms":true,"islands":false,"lowrise":true},"home":{"name":"Bali Hills","sqm":"$2,319","vs":"ниже медианы города $2,504","price":"от $250,000","kind":"Вилла, 2-3 спальни, 102 м². Срок сдачи не назван","path":"https://housebook.global/nedvizhimost/indonesia/canggu/bali-hills-452cda","type":"villa","floors":2,"apt":1,"due":""}},{"key":"istanbul","country":"Турция","city":"Стамбул","lat":41,"lon":28.98,"seed":41,"median":"$5,015","entry":"$179,000","n":30,"path":"https://housebook.global/nedvizhimost/turkey/istanbul","profile":{"hills":1,"towers":0.45,"palms":false,"islands":false},"home":{"name":"Tersane Istanbul","sqm":"$7,785","vs":"выше медианы города $5,015","price":"от $1,125,000","kind":"Кондоминиум, 1-4 спальни, 145 м². Сдача Q2 2027","path":"https://housebook.global/nedvizhimost/turkey/istanbul/tersane-istanbul-bc6d94","type":"tower","floors":7,"apt":5,"due":"Q2 2027"}},{"key":"paphos","country":"Республика Кипр","city":"Пафос","lat":34.77,"lon":32.42,"seed":53,"median":"$4,052","entry":"$217,965","n":24,"path":"https://housebook.global/nedvizhimost/cyprus/paphos","profile":{"hills":0.5,"towers":0,"palms":true,"islands":false,"lowrise":true},"home":{"name":"Vista Gardens By Quality Homes","sqm":"2.422 €","vs":"","price":"от 285.000 €","kind":"Кондоминиум, 2-3 спальни, 94 м². Сдача Q2 2028","path":"https://housebook.global/nedvizhimost/cyprus/paphos/vista-gardens-by-quality-homes-bc79e3","type":"tower","floors":4,"apt":2,"due":"Q2 2028"}},{"key":"batumi","country":"Грузия","city":"Батуми","lat":41.64,"lon":41.64,"seed":67,"median":"$2,391","entry":"$39,780","n":23,"path":"https://housebook.global/nedvizhimost/georgia/batumi","profile":{"hills":1,"towers":0.7,"palms":true,"islands":false},"home":{"name":"Grand Life by European Village","sqm":"$2,391","vs":"ровно медиана города","price":"от $157,583","kind":"Кондоминиум, 1-2 спальни, 31 м². Сдача Q4 2027","path":"https://housebook.global/nedvizhimost/georgia/batumi/grand-life-by-european-village-8cf336","type":"tower","floors":11,"apt":8,"due":"Q4 2027"}}];const HB_STAGES=["Бронирование","Проверка застройщика и документов","Договор","Платежи по графику стройки","Регистрация права","Сопровождение после сделки"];const LAND={step:1.5,lat0:-84,rows:[[25,2,22],[31,2,8,11,19],[38,3,9,15,21],[44,2,1,4,9,16,1,18,24],[50,3,12,18,1,20,28],[56,5,12,24,29],[62,7,5,14,6,28,31],[68,14,4,20,3,31,35],[74,16,1,22,2,35,16,52,20],[80,24,2,41,1,43,12,56,20],[86,27,1,53,7,62,18],[92,58,3,67,16],[98,31,1,63,1],[103],[109],[115],[120],[125],[131],[136],[141,42,2],[146,43,2],[151,44,3],[156,45,4,108,1],[161,47,4],[165,48,4],[170,50,4,164,2],[174,52,3,169,2],[178,52,5,161,1,174,1],[182,54,6],[187,55,6,169,1,184,2],[190,56,9,169,5,187,1],[194,58,8,172,6],[198,59,8,68,1,163,1,173,1,175,7],[201,61,10,111,5,165,5,175,10],[205,62,11,113,6,168,22],[208,63,12,114,8,170,23],[211,64,13,115,9,173,22],[214,65,13,116,10,175,23],[217,66,13,117,11,177,24],[219,67,14,118,13,136,2,179,23],[222,68,17,120,13,138,3,181,23],[224,68,19,120,14,139,3,184,21,214,1],[226,69,19,121,14,141,3,189,17],[228,69,20,121,16,142,3,191,16,226,1],[230,68,22,122,18,143,4,194,9,205,3,229,1],[232,67,24,124,18,146,2,197,6,207,3,223,1],[233,67,24,125,18,148,1,201,4,208,1],[235,67,26,126,18,204,1,206,1,210,1],[236,67,27,127,17,216,1],[237,67,28,127,17,195,1,201,1,211,2,215,1,224,1],[238,66,30,128,17,190,4,210,6],[239,66,30,128,17,190,1,211,6,218,2,222,1],[239,66,29,127,19,188,2,200,1,209,7,220,1],[240,67,26,127,20,188,3,194,4,199,1,201,1,205,2,208,7],[240,66,24,126,22,187,3,193,5,200,2,208,1],[240,67,19,126,23,186,3,193,5],[240,67,20,126,24,186,2,193,6,205,1],[240,68,18,127,24,185,2,188,1,195,3],[239,68,17,114,1,123,28,183,2,186,2,195,3],[239,68,14,112,8,123,29,186,2,197,1,202,1],[238,65,1,67,13,111,41,172,1,200,3],[237,63,1,65,2,68,11,110,42,169,1,171,1,183,1,201,1],[236,62,1,69,6,76,1,108,43,168,2,186,2],[235,61,2,70,1,107,39,167,3,182,1,185,4],[233,58,4,106,41,165,3,180,7,196,1],[232,56,6,105,37,144,5,164,4,179,7,193,1],[230,52,7,104,36,142,7,162,5,175,9,192,1],[228,49,9,65,1,71,1,104,34,140,10,160,7,174,7,190,1],[226,15,1,47,6,56,2,67,2,103,33,139,10,159,7,172,7,181,2],[224,46,5,56,2,63,2,101,34,136,13,156,10,169,10,180,1],[222,46,5,59,3,101,32,135,13,154,28,185,1],[219,42,1,44,6,100,31,133,11,151,30],[217,41,1,43,7,100,29,131,9,144,36],[214,39,1,41,8,58,1,99,28,128,9,139,1,141,38],[211,40,9,57,1,99,35,135,42],[208,37,1,39,13,56,1,98,34,133,41],[205,36,1,38,18,97,14,114,4,122,50],[201,35,21,96,11,120,48,173,2],[198,33,23,95,10,119,46,171,3],[194,31,25,97,6,116,46,165,2,170,3],[190,30,25,90,4,102,1,106,1,109,12,123,36,162,1,168,1],[187,29,25,89,4,104,1,107,12,121,34,156,1,159,1,166,1],[182,28,25,87,4,95,1,98,2,101,2,104,1,106,10,118,34,153,3,162,1],[178,28,26,85,5,93,1,95,1,98,5,110,3,116,37,158,1],[174,27,26,83,2,86,4,92,2,95,6,106,4,112,40,155,2],[170,26,27,54,2,84,7,92,7,101,6,109,41],[165,26,27,82,17,100,5,107,39],[161,26,23,50,1,54,3,78,65],[156,23,26,50,1,53,1,78,61,140,1],[151,22,29,74,60,135,1],[146,19,1,21,19,41,9,69,1,71,3,75,56,136,1],[141,18,1,20,18,40,8,67,1,69,1,74,50,132,1],[136,18,18,39,6,66,1,71,2,76,44,127,2],[131,8,2,17,16,38,5,63,2,70,1,73,43,122,3],[125,8,1,15,15,35,6,65,3,71,41,118,1],[120,4,7,13,15,34,3,38,1,62,4,70,42,114,2],[115,4,24,33,2,42,2,59,4,64,45,110,3],[109,5,22,33,2,39,3,57,3,61,48],[103,5,21,27,1,29,4,37,3,45,2,55,6,62,40],[98,0,3,4,22,29,1,31,1,34,5,42,1,44,1,52,3,56,2,60,38],[92,0,1,4,21,26,4,32,6,50,6,57,35],[86,4,11,16,1,18,3,23,1,25,2,31,6,47,5,58,2,61,22,84,2],[80,4,2,15,2,19,6,28,6,45,2,55,1,57,18],[74,11,1,13,2,16,1,18,4,26,6,51,12,66,2],[68,11,1,15,4,23,7,44,1,49,7,57,1,60,1],[62,12,1,14,3,21,6,46,4,55,2],[56,9,1,12,4,17,8,38,1,44,1],[50,9,1,11,1,13,1,15,7,27,1],[44,10,1,12,1,14,6,23,1,33,1],[38,10,8],[31,8,2,11,3],[25]]};
@@ -544,7 +555,7 @@ function mergeGeos(list) { const pos = [], nor = [], idx = []; let off = 0; for 
 function slab(w, h, color, alpha, o = {}) { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshStandardMaterial({ color, roughness: .95, envMapIntensity: .2, transparent: true, opacity: alpha, depthWrite: alpha >= 1 })); m.userData.baseAlpha = alpha; m.rotation.x = -Math.PI / 2; m.receiveShadow = true; return m; }
 function fade(group, a) { group.traverse(o => { if (o.material && o.material.opacity !== undefined && !o.userData.noFade) { o.material.transparent = true; o.material.opacity = (o.userData.baseAlpha ?? 1) * a; } }); group.visible = a > .01; }
 const panels = [...document.querySelectorAll('.panel, .hero__l')];
-const topBar = document.querySelector('.top'), hudEl = document.getElementById('hud'), skipEl = document.getElementById('skip');
+const topBar = document.querySelector('.top'), hudEl = document.getElementById('hud'), railEl = document.getElementById('rail');
 function callout(text, cls, href) { const el = document.createElement(href ? 'a' : 'div'); el.className = 'co' + (cls ? ' ' + cls : ''); el.innerHTML = text; if (href) { el.href = href; el.tabIndex = -1; } stage.appendChild(el);
   const o = { el, on: false, at(v3, on, dx = 0) { const v = v3.clone().project(camera); const vis = !!on && v.z < 1 && Math.abs(v.x) < 1.1 && Math.abs(v.y) < 1.1;
     if (vis) { const W = stage.clientWidth, half = el.offsetWidth / 2 + 8, ax = (v.x + 1) / 2 * W; let ay = (1 - v.y) / 2 * stage.clientHeight, cx = clamp(ax + dx, half, W - half);
@@ -915,9 +926,9 @@ const coStages = HB_STAGES.map((s, i) => callout('<b>' + (i + 1) + '</b> ' + s, 
 const cloud = document.getElementById('cloud');
 let swap = null, swapGrow = 1;
 // Смена рынка (порядок по решению Ильи 23.09): старый квартал плавно уходит в землю на виду (SW_SINK),
-// облака стартуют с задержкой SW_DELAY и сплошной полосой закрывают кадр примерно с SW_DELAY + .85 по SW_DELAY + 1.25 с,
+// облака наезжают сразу, вместе с началом опускания (SW_DELAY = 0), и сплошной полосой закрывают кадр примерно с SW_DELAY + .85 по SW_DELAY + 1.25 с,
 // в этом окне квартал перестраивается (SW_COVER), а новый вырастает уже после прохода облаков (SW_HOLD, SW_RISE)
-const SW_SINK = .7, SW_DELAY = .45, SW_COVER = SW_DELAY + 1.05, SW_HOLD = .35, SW_RISE = .8;
+const SW_SINK = .7, SW_DELAY = 0, SW_COVER = SW_DELAY + 1.05, SW_HOLD = .35, SW_RISE = .8;
 function startClouds() { cloud.classList.remove('go'); void cloud.offsetWidth; cloud.classList.add('go'); }
 function setMarket(key, opts = {}) {
   const goto = () => { if (opts.scroll) document.getElementById('ch2').scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); };
@@ -998,7 +1009,7 @@ function frame(p, idle, dt) {
   // подписи
   const camDir = camera.position.clone().normalize();
   // подписи стран сверяются по месту, где легли на самом деле, и не ложатся друг на друга и на кнопку пропуска
-  const placed = [], sr0 = stage.getBoundingClientRect(), sk = skipEl.getBoundingClientRect(); if (sk.width) placed.push([sk.left - sr0.left - 4, sk.top - sr0.top - 4, sk.right - sr0.left + 4, sk.bottom - sr0.top + 4]);
+  const placed = [], sr0 = stage.getBoundingClientRect(), sk = railEl.getBoundingClientRect(); if (sk.width) placed.push([sk.left - sr0.left - 4, sk.top - sr0.top - 4, sk.right - sr0.left + 4, sk.bottom - sr0.top + 4]);
   for (const pin of (focusPin ? [focusPin, ...pins.filter(x => x !== focusPin)] : pins)) { const nW = pin.normal.clone().applyQuaternion(globe.quaternion), at = pin.g.getWorldPosition(new THREE.Vector3());
     pin.label.at(at, t2 < .1 && nW.dot(camDir) > .42);
     if (pin.label.on) { const b = pin.label.box, r = [b.cx - b.w / 2 - 4, b.ay - b.h - 16, b.cx + b.w / 2 + 4, b.ay]; if (placed.some(q => r[0] < q[2] && r[2] > q[0] && r[1] < q[3] && r[3] > q[1])) pin.label.at(at, false); else placed.push(r); }
@@ -1064,31 +1075,60 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 addEventListener('scroll', readTarget, { passive: true }); addEventListener('resize', size);
-// колесо мыши: щелчок везёт к следующей главе плавным проездом; тачпад, клавиатура и палец листают как раньше
+// колесо мыши: два щелчка подряд везут к следующей главе плавным проездом, одиночный только взводит её точку; тачпад и палец листают как раньше
 const chapters = [...theatre.querySelectorAll('.chapter')];
 // остановка главы k: конец её перехода в сцене, но не позже, чем снизу начнёт выглядывать панель следующей главы
 function stopY(k) { let y = theatre.getBoundingClientRect().top + scrollY + (theatre.offsetHeight - innerHeight) * k / N; const nx = chapters[k];
   if (k > 0 && nx) { const pn = nx.querySelector('.panel'), half = getComputedStyle(pn).transform !== 'none' ? pn.offsetHeight / 2 : 0; y = Math.min(y, nx.getBoundingClientRect().top + scrollY + parseFloat(getComputedStyle(nx).paddingTop) - half - innerHeight - 48); } // запас 40 px: у разных городов панель следующей главы разной высоты
   return y; }
+// ближайшая глава по направлению dir от позиции from; вне сцены null, там страница листается сама
+function nextStop(dir, from) {
+  if (dir > 0 && from < stopY(N) - 4) { for (let i = 1; i <= N; i++) if (stopY(i) > from + 4) return i; }
+  if (dir < 0 && from <= stopY(N) + 4 && from > stopY(0) + 4) { for (let i = N - 1; i >= 0; i--) if (stopY(i) < from - 4) return i; }
+  return null; }
 const mouseWheel = e => e.deltaMode !== 0 || (!!e.wheelDeltaY && Math.abs(e.wheelDeltaY + 3 * e.deltaY) > 1.5); // у тачпада в Chrome и Safari wheelDeltaY ровно -3 x deltaY
 let glide = null;
 function glideStep(now) { if (!glide) return; const k = Math.min(1, (now - glide.t0) / glide.dur), e = k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; scrollTo(0, glide.from + (glide.to - glide.from) * e); if (k < 1) requestAnimationFrame(glideStep); else { glide = null; document.documentElement.style.scrollBehavior = ''; } }
 function glideTo(y, dur = 1000) { const run = !glide; glide = { from: scrollY, to: Math.round(y), t0: performance.now(), dur: reduced ? 1 : dur, dir: Math.sign(y - scrollY) }; document.documentElement.style.scrollBehavior = 'auto'; if (run) requestAnimationFrame(glideStep); }
-for (const ev of ['mousedown', 'touchstart', 'keydown']) addEventListener(ev, () => { if (glide) { glide = null; document.documentElement.style.scrollBehavior = ''; } }, { passive: true });
+function stopGlide() { if (glide) { glide = null; document.documentElement.style.scrollBehavior = ''; } }
+for (const ev of ['mousedown', 'touchstart']) addEventListener(ev, stopGlide, { passive: true });
+// точки глав I-V: клик везёт к главе, текущая отмечена сразу по цели проезда
+const dots = [...document.querySelectorAll('.dots button')];
+dots.forEach((b, i) => b.addEventListener('click', () => glideTo(stopY(i + 1))));
+function markDots() { const y = glide ? glide.to : scrollY, s = Array.from({ length: N + 1 }, (_, k) => stopY(k)); let cur = 0; for (let k = 1; k <= N; k++) if (y >= (s[k - 1] + s[k]) / 2) cur = k;
+  dots.forEach((b, i) => i + 1 === cur ? b.setAttribute('aria-current', 'step') : b.removeAttribute('aria-current')); }
+addEventListener('scroll', markDots, { passive: true }); addEventListener('resize', markDots);
+let armed = null, armT = 0;
+function disarm() { armed = null; clearTimeout(armT); dots.forEach(b => b.classList.remove('dot--armed')); }
+function arm(dir, k) { armed = { dir, t: performance.now() }; dots.forEach((b, i) => b.classList.toggle('dot--armed', i + 1 === k)); clearTimeout(armT); armT = setTimeout(disarm, 1200); }
 addEventListener('wheel', e => {
   if (e.ctrlKey || !e.deltaY || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
-  if (!glide && !mouseWheel(e)) return;
-  const dir = Math.sign(e.deltaY), from = glide ? glide.to : scrollY;
-  if (glide) { e.preventDefault(); if (dir === glide.dir && performance.now() - glide.t0 < 250) return; }
-  let to = null;
-  if (dir > 0 && from < stopY(N) - 4) { for (let i = 1; i <= N; i++) if (stopY(i) > from + 4) { to = stopY(i); break; } }
-  if (dir < 0 && from <= stopY(N) + 4 && from > stopY(0) + 4) { for (let i = N - 1; i >= 0; i--) if (stopY(i) < from - 4) { to = stopY(i); break; } }
-  if (to === null) return;
-  e.preventDefault(); glideTo(to);
+  if (!mouseWheel(e)) { stopGlide(); return; } // тачпад перехватывает проезд и листает сам
+  const dir = Math.sign(e.deltaY), now = performance.now();
+  if (glide && dir === glide.dir && now - glide.t0 < 250) { e.preventDefault(); return; } // хвост того же поворота колеса
+  const k = nextStop(dir, glide ? glide.to : scrollY);
+  if (k === null) { if (glide) e.preventDefault(); return; }
+  e.preventDefault();
+  if (!armed || armed.dir !== dir || now - armed.t > 1200) { arm(dir, k); return; } // случайный одиночный щелчок страницу не сдвигает
+  disarm(); glideTo(stopY(k)); markDots();
 }, { passive: false });
+// стрелки вверх и вниз листают сцену по главам; в полях ввода и с модификаторами работают как обычно
+addEventListener('keydown', e => {
+  const dir = e.key === 'ArrowDown' ? 1 : e.key === 'ArrowUp' ? -1 : 0, t = e.target;
+  const k = dir && !e.altKey && !e.ctrlKey && !e.metaKey && !e.shiftKey && !(t.closest && t.closest('input, textarea, select')) && !t.isContentEditable ? nextStop(dir, glide ? glide.to : scrollY) : null;
+  if (k === null) { stopGlide(); return; }
+  e.preventDefault(); if (e.repeat) return; // зажатая стрелка не пролетает главы
+  disarm(); glideTo(stopY(k)); markDots();
+});
+// между главами I и II сцена в переходе (планета уже ушла, город ещё плоский), замирать там нельзя: когда прокрутка стихла, страница доезжает до главы по ходу движения
+let lastY = scrollY, lastDir = 1, settleT = 0, touching = false;
+function settleLater() { clearTimeout(settleT); settleT = setTimeout(() => { if (glide || touching) return; const a = stopY(1), b = stopY(2); if (scrollY > a + 8 && scrollY < b - 8) { disarm(); glideTo(lastDir > 0 ? b : a, 900); markDots(); } }, 180); }
+addEventListener('touchstart', () => { touching = true; }, { passive: true });
+addEventListener('touchend', () => { touching = false; settleLater(); }, { passive: true }); // палец отпущен без инерции: скролл-событий больше не будет
+addEventListener('scroll', () => { if (glide) { lastY = scrollY; return; } if (scrollY !== lastY) lastDir = Math.sign(scrollY - lastY); lastY = scrollY; settleLater(); }, { passive: true });
 // «Пропустить сцену» проезжает главы разом и останавливается на первом блоке под сценой
 document.getElementById('skip').addEventListener('click', () => glideTo(document.getElementById('strany').getBoundingClientRect().top + scrollY - document.querySelector('.top').offsetHeight, 1400));
-setMarket(HB_MARKETS[0].key, { instant: true }); size();
+setMarket(HB_MARKETS[0].key, { instant: true }); size(); markDots();
 try { if (localStorage.getItem('hb-night') === '1') { nightTarget = 1; setNightUI(); applyNight(1, true); } } catch (e) {} requestAnimationFrame(loop);
 // проверка для стенда: путь камеры против домов квартала
 window.__hb = { grow() { return swapGrow; },
