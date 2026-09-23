@@ -437,6 +437,7 @@ const isPhone = matchMedia('(max-width: 899px)').matches;
 let inFrame = false; try { inFrame = window.self !== window.top; } catch (e) { inFrame = true; }
 renderer.setPixelRatio(Math.min(devicePixelRatio, inFrame ? 1 : 1.5)); // во фрейме (артефакт) рядом крутится ещё и страница чата, поэтому плотность 1
 renderer.setClearColor(V.page);
+const EXP_DAY = .74; let expCity = EXP_DAY; renderer.toneMapping = THREE.LinearToneMapping; // днём свет квартала в сумме больше единицы: без экспозиции белые крыши и тротуары выгорали в чистый белый на трети кадра; планета первого экрана остаётся в прежнем свете, экспозиция приходит вместе с кварталом
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = isPhone ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false; // тени пересчитываются только в кадрах прокрутки и жестов, не в покое
 const scene = new THREE.Scene();
 scene.fog = new THREE.Fog(V.page, 60, 230);
@@ -794,8 +795,12 @@ function buildCity(m) {
       for (const ch of [...o.children]) { if (ch.userData.edge) { ch.updateMatrix(); edgeList.push({ geo: ch.geometry.clone().applyMatrix4(new THREE.Matrix4().multiplyMatrices(mm, ch.matrix)), alpha: ch.material.opacity }); ch.geometry.dispose(); ch.material.dispose(); o.remove(ch); } else walk(ch, mm); } })(g, new THREE.Matrix4());
     const byA = {}; for (const e of edgeList) { const k = e.alpha.toFixed(2); (byA[k] = byA[k] || []).push(e.geo); }
     for (const k in byA) { const pos = []; for (const gg of byA[k]) { const q = gg.attributes.position; for (let i = 0; i < q.count; i++) pos.push(q.getX(i), q.getY(i), q.getZ(i)); gg.dispose(); }
-      const l = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)), new THREE.LineBasicMaterial({ color: V.ink, transparent: true, opacity: +k })); l.frustumCulled = false; g.add(l); } }
+      const l = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)), new THREE.LineBasicMaterial({ color: V.ink, transparent: true, opacity: +k })); l.frustumCulled = false; l.userData.baseAlpha = +k; g.add(l); } }
+  // кромки гаснут, пока квартал сплюснут: сложенные линии этажей иначе ложатся на крышу серыми полосами
+  g.userData.lines = []; g.traverse(o => { if (o.isLineSegments && o.userData.baseAlpha !== undefined) g.userData.lines.push(o); });
   for (const f of flats) { f.material.transparent = true; f.userData.baseAlpha = f.userData.baseAlpha ?? 1; }
+  // слои земли лежат в тысячных долях друг над другом и в сплюснутом квартале сливаются: порядок по высоте закреплён сдвигом глубины, иначе они мерцают серым
+  [...flats].sort((a, b) => a.position.y - b.position.y).forEach((f, i) => { f.material.polygonOffset = true; f.material.polygonOffsetFactor = 0; f.material.polygonOffsetUnits = -4 * i; }); // без множителя наклона: на пологом виде он выдвигал землю вперёд пальм и заборов
   applyNight(nightNow, true);
 }
 
@@ -906,7 +911,7 @@ const dayBg = new THREE.Color(V.page), nightBg = new THREE.Color(V.ink), tmpC = 
 function applyNight(n, force) {
   nightNow = n;
   tmpC.copy(dayBg).lerp(nightBg, n); renderer.setClearColor(tmpC); scene.fog.color.copy(tmpC);
-  hemi.intensity = lerp(.34, .22, n); hemi.color.setHex(0xffffff).lerp(new THREE.Color(V.control), n); sun.intensity = lerp(.32, 0, n); cityLight.intensity = lerp(1.0, .06, n);
+  hemi.intensity = lerp(.34, .22, n); hemi.color.setHex(0xffffff).lerp(new THREE.Color(V.control), n); sun.intensity = lerp(.32, 0, n); cityLight.intensity = lerp(1.0, .06, n); expCity = lerp(EXP_DAY, 1, n);
   if (seaMat) seaMat.uniforms.night.value = n;
   // окна квартала зажигает шейдер фасада: доля светящихся и их цвет заданы в нём
   facade.userData.u.uNight.value = n; facade.userData.u.uLit.value.setHex(V.accent2).lerp(new THREE.Color(V.tint), n);
@@ -984,7 +989,11 @@ function frame(p, idle, dt) {
   globe.updateMatrixWorld(true);
   anchor.getWorldPosition(city.position); anchor.getWorldQuaternion(city.quaternion);
   const w = smooth(t2), grow = smooth((t2 - .3) / .5), flat = smooth((t2 - .1) / .3);
-  const cs = lerp(CS0, 1, w); city.scale.set(cs, Math.max(cs * grow * swapGrow, .001), cs); city.visible = flat > .01; city.updateMatrixWorld(true);
+  const cs = lerp(CS0, 1, w); city.scale.set(cs, cs * Math.max(grow * swapGrow, .05), cs); city.visible = flat > .01; city.updateMatrixWorld(true); // не тоньше 5% высоты: крыша и детали на ней не сливаются в одну плоскость
+  // область теней растёт вместе с кварталом: маленький квартал иначе занимает угол карты теней, и крыши штрихуются собственной тенью
+  { const sc = cityLight.shadow.camera, e = 32 * cs, far = grow * swapGrow < .25 ? 2.001 * cs : 90 * cs; if (Math.abs(sc.right - e) > 1e-4 || sc.far !== far) { Object.assign(sc, { left: -e, right: e, top: e, bottom: -e, near: 2 * cs, far }); sc.updateProjectionMatrix(); cityLight.shadow.normalBias = .12 * cs; } cityLight.shadow.bias = -.0004 - .006 * (1 - Math.max(grow * swapGrow, .05)); } // в сплюснутом доме полосы и балконы лежат вплотную под крышей и штрихуют её тенью: пока дома ниже четверти роста, область теней пустая (дальняя граница у самой лампы), и тени нет вовсе
+  if (built) { const ea = smooth((grow * swapGrow - .05) / .3); for (const l of built.userData.lines) l.material.opacity = l.userData.baseAlpha * ea; } // кромки этажей в сплюснутом доме ложатся на крышу стопкой серых линий
+  renderer.toneMappingExposure = lerp(1, expCity, flat);
   for (const m of flats) if (m.material.uniforms) m.material.uniforms.a.value = flat; else m.material.opacity = m.userData.baseAlpha * flat;
   fade(pinsGroup, 1 - smooth(t2 * 4)); landMat.opacity = .78 * (1 - smooth(t2 * 2.5));
   rim.material.uniforms.a.value = lerp(.5, .2, t2); gridMat.opacity = .07 * (1 - smooth(t2 * 3));
